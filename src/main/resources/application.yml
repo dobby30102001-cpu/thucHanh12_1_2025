@@ -1,0 +1,5 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/btap12_1_2025
+    username: root
+    password: root

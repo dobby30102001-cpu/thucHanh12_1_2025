@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @Entity
@@ -19,16 +21,30 @@ public class Account {
     private String username;
 
     @Column(name="password")
-    private  String Password;
+    private  String password;
 
     @Column(name = "first_name")
-    private String FirstName;
+    private String firstName;
 
     @Column(name = "last_name")
-    private String LastName;
+    private String lastName;
 
     private String role;
 
     @Column(name = "department_id")
     private Integer departmentId;
+
+
+
+    // lock account
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private AccountStatus status;
+
+    @Column(name = "locked_at")
+    private LocalDateTime lockedAt;
+
+    @Column(name = "lock_reason")
+    private String lockReason;
+    ;
 }

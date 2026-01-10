@@ -3,20 +3,14 @@ package vn.test.thuchanh12_1_2025.DTO.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 public class CreateAccountRequest {
-//    id            INT PRIMARY KEY AUTO_INCREMENT,
-//    username      VARCHAR(100) NOT NULL UNIQUE,
-//    `password`    VARCHAR(255) NOT NULL,
-//    first_name    VARCHAR(100) NOT NULL,
-//    last_name     VARCHAR(100) NOT NULL,
-//    `role`        VARCHAR(50)  NOT NULL,
-//    department_id INT,
-//    FOREIGN KEY (department_id)
+
 
 
     @NotEmpty(message = "Username cannot be empty")
@@ -31,6 +25,7 @@ public class CreateAccountRequest {
     private String role;
 
 
+    @NotNull
     private Integer departmentId;
 
 }

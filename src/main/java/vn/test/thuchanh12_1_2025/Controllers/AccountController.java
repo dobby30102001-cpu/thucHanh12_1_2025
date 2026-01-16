@@ -12,24 +12,22 @@ import org.springframework.web.bind.annotation.*;
 import vn.test.thuchanh12_1_2025.Common.BaseResponse;
 import vn.test.thuchanh12_1_2025.DTO.request.*;
 import vn.test.thuchanh12_1_2025.Models.Account;
-import vn.test.thuchanh12_1_2025.Models.Department;
 import vn.test.thuchanh12_1_2025.Services.AccountService;
 
-import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
+
 
 @RestController
-@RequestMapping("/api/")
+@RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class AccountController {
     private final AccountService accountService;
 
 
-    @PostMapping("/users/create")
+    @PostMapping("/api/users")
 //  or  @PreAuthorize("hasRole('ADMIN')")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
 //    @PreAuthorize("hasAuthority('ROLE_USER')")
     public ResponseEntity<BaseResponse<Account>> createAccount(@RequestBody @Valid CreateAccountRequest user) {
-        System.out.println("=== CONTROLLER CALLED ===");
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new BaseResponse<>(accountService.addAccount(user),
                         "Create user successfully"));
@@ -37,13 +35,14 @@ public class AccountController {
 
 
     // update account
-    @PutMapping("/users/{id}")
+    @PutMapping("/api/users/{id}")
     public ResponseEntity<BaseResponse<Account>> updateAccount(@PathVariable Integer id, @RequestBody @Valid UpdateAccountRequest userUpdate) {
         return ResponseEntity.ok(new BaseResponse<>(accountService.updateAccount(id, userUpdate), "Update user successfully"));
     }
 
     // delete multiple accounts by ids
-    @DeleteMapping
+    @DeleteMapping("/api/users")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<BaseResponse<Void>> deleteMultipleAccounts(@RequestBody DeleteRequest request) {
         accountService.deleteMultipleAccounts(request.getIds());
         return ResponseEntity.ok(new BaseResponse<>(null, "Delete accounts successfully"));
@@ -52,7 +51,7 @@ public class AccountController {
 
     //    // api lấy danh sách account có phân trang(nhiều điệu kiên searching sư dụng Specification)
     @GetMapping("/search")
-    public ResponseEntity<BaseResponse<Page<Account>>> getAccountByFilter(GetAccountRequest request, Pageable pageable) {
+    public ResponseEntity<BaseResponse<Page<Account>>> getAccountByFilter(@ModelAttribute  GetAccountRequest request, Pageable pageable) {
         Page<Account> getAccount = accountService.getAccountByFilter(request, pageable);
         return ResponseEntity.ok(new BaseResponse<>(getAccount, "Get accounts successfully"));
 
@@ -77,7 +76,7 @@ public class AccountController {
 
     // 2. verify otp và đặt lại mật khẩu mới
     @PostMapping("/reset-password")
-    public ResponseEntity<BaseResponse<Boolean>> resetPassword(@RequestBody ResetPasswordRequest resetPasswordRequest) {
+    public ResponseEntity<BaseResponse<Boolean>> resetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest) {
         boolean result = accountService.resetPassword(resetPasswordRequest);
         return ResponseEntity.ok(new BaseResponse<>(result, "Password reset successfully"));
     }

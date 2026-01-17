@@ -34,6 +34,10 @@ public class Account {
     @Column(name = "department_id")
     private Integer departmentId;
 
+    @Column(nullable = false, unique = true)
+    private String email;
+
+
 
 
     // lock account

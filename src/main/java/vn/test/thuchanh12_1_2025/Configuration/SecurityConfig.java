@@ -6,6 +6,8 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -18,29 +20,29 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .csrf(csrf -> csrf.disable())
                 .cors(Customizer.withDefaults())
-//                .authorizeHttpRequests(auth ->
-//                        auth.anyRequest().authenticated())
-                .httpBasic(Customizer.withDefaults())
-                .csrf(crsf -> crsf.disable());
+                .authorizeHttpRequests(auth -> auth
+                        // Swagger (springdoc)
+                        .requestMatchers(
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
+                        ).permitAll()
+                        // Auth endpoints
+
+                        .requestMatchers(
+                                "/error",
+                                "/api/auth/forgot-password",
+                                "/api/auth/reset-password"
+                        ).permitAll()
+                        // Còn lại phải login
+                        .anyRequest().authenticated()
+                )
+                .httpBasic(Customizer.withDefaults());
         return http.build();
     }
-//
-//    @Bean
-//    public CorsConfigurationSource corsConfigurationSource() {
-//        CorsConfiguration corsConfiguration = new CorsConfiguration();
-//
-//        corsConfiguration.setAllowedOrigins(Collection.singletonList("*"));
-//        corsConfiguration.setAllowedMethods(Collection.singletonList("*"));
-//        corsConfiguration.setAllowedHeaders(Collection.singletonList("*"));
-//        corsConfiguration.setAllowCredentials(false);
-//
-//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//        source.registerCorsConfiguration("/**", corsConfiguration);
-//        return source;
-//
-//
-//    }
+
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
@@ -55,5 +57,8 @@ public class SecurityConfig {
 
         return source;
     }
+
+
+
 
 }

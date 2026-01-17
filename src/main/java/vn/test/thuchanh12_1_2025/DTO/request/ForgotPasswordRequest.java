@@ -11,7 +11,7 @@ import lombok.Setter;
 public class ForgotPasswordRequest {
 
     @NotEmpty
-    private String username;
+    private String email;
 
 
 }

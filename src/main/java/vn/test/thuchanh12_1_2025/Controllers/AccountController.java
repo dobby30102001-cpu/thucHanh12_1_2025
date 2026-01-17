@@ -17,7 +17,7 @@ import vn.test.thuchanh12_1_2025.Services.AccountService;
 
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AccountController {
     private final AccountService accountService;
@@ -32,6 +32,7 @@ public class AccountController {
                 .body(new BaseResponse<>(accountService.addAccount(user),
                         "Create user successfully"));
     }
+
 
 
     // update account
@@ -68,17 +69,17 @@ public class AccountController {
 
     // Quên mật khẩu
     // 1. request: username  -> response TRUE/FALSE
-    @PostMapping("/for-Got-Pass-Word")
-    public ResponseEntity<BaseResponse<Boolean>> forGotPassWord(@RequestBody ForgotPasswordRequest forgotPasswordRequest) {
-        boolean result = accountService.forgotPassword(forgotPasswordRequest);
-        return ResponseEntity.ok(new BaseResponse<>(result, "Forgot password request processed"));
+    @PostMapping("/forgot-password")
+    public ResponseEntity<BaseResponse<String>> forGotPassWord(@RequestBody ForgotPasswordRequest forgotPasswordRequest) {
+        String token = accountService.forgotPassword(forgotPasswordRequest.getEmail());
+        return ResponseEntity.ok(new BaseResponse<>(token, "Reset token created"));
     }
 
-    // 2. verify otp và đặt lại mật khẩu mới
+    // 2. verify token và đặt lại mật khẩu mới
     @PostMapping("/reset-password")
-    public ResponseEntity<BaseResponse<Boolean>> resetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest) {
-        boolean result = accountService.resetPassword(resetPasswordRequest);
-        return ResponseEntity.ok(new BaseResponse<>(result, "Password reset successfully"));
+    public ResponseEntity<BaseResponse<Void>> resetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest) {
+         accountService.resetPassword(resetPasswordRequest.getToken(),resetPasswordRequest.getNewPassword());
+        return ResponseEntity.ok(new BaseResponse<>( null,"Password reset success"));
     }
 
 

@@ -21,9 +21,9 @@ public interface AccountService {
 
     Account addAccountToDepartment(CreateAccountRequest createAccountRequest);
 
-    Boolean forgotPassword(ForgotPasswordRequest forgotPasswordRequest);
+    String forgotPassword( String forgotPasswordRequest);
 
-    Boolean resetPassword(ResetPasswordRequest resetPasswordRequest);
+    void resetPassword(String token, String newPassword);
 
     Boolean lockAccount(Integer id, AccountLockRequest lockAccountRequest);
 

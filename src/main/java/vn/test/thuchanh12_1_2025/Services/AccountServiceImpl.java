@@ -15,7 +15,6 @@ import vn.test.thuchanh12_1_2025.Exception.BusinessException;
 import vn.test.thuchanh12_1_2025.Models.Account;
 import vn.test.thuchanh12_1_2025.Models.AccountStatus;
 import vn.test.thuchanh12_1_2025.Models.Department;
-import vn.test.thuchanh12_1_2025.Models.OTP;
 import vn.test.thuchanh12_1_2025.Repositories.AccountRepository;
 import vn.test.thuchanh12_1_2025.Repositories.DepartmentRepository;
 import vn.test.thuchanh12_1_2025.Repositories.OtpRepository;
@@ -24,7 +23,14 @@ import vn.test.thuchanh12_1_2025.Specification.AccountSpecification;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
+
+
+import vn.test.thuchanh12_1_2025.Models.PasswordResetToken;
+import vn.test.thuchanh12_1_2025.Repositories.PasswordResetTokenRepository;
+
+
+import java.util.UUID;
+
 
 @Slf4j
 @Service
@@ -34,7 +40,9 @@ public class AccountServiceImpl implements AccountService {
     public final DepartmentRepository departmentRepository;
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
-    private final OtpRepository otpRepository;
+    private final PasswordResetTokenRepository passwordResetTokenRepository;
+
+
 
 
     @Override
@@ -120,40 +128,83 @@ public class AccountServiceImpl implements AccountService {
         return accountRepository.save(account);
     }
 
-    @Override
+
     @Transactional
-    public Boolean forgotPassword(ForgotPasswordRequest forgotPasswordRequest) {
-        Account existedAccount = accountRepository.findByUsername(forgotPasswordRequest.getUsername());
-        if (existedAccount == null) {
-            throw new BusinessException("Account not found");
+    public String forgotPassword(String email) {
+        Account account = accountRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+
+        // tạo token
+        String token = UUID.randomUUID().toString().replace("-", "");
+
+        PasswordResetToken resetToken = PasswordResetToken.builder()
+                .token(token)
+                .account(account)
+                .expiresAt(LocalDateTime.now().plusMinutes(15))
+                .usedAt(null)
+                .build();
+
+        passwordResetTokenRepository.save(resetToken);
+        return token;
+    }
+//    public Boolean forgotPassword(ForgotPasswordRequest forgotPasswordRequest) {
+//    Account existedAccount = accountRepository.findByUsername(forgotPasswordRequest.getUsername());
+//        if (existedAccount == null) {
+//            throw new BusinessException("Account not found");
+//        }
+//        Random random = new Random();
+//        Integer otp = random.nextInt(1000000);
+//
+//        OTP newOTP = new OTP();
+//        newOTP.setUsername(forgotPasswordRequest.getUsername());
+//        newOTP.setOtp(otp.toString());
+//
+//        OTP createdOTP = otpRepository.save(newOTP);
+//        log.info("OTP for username {}: {}", forgotPasswordRequest.getUsername(), createdOTP.getOtp());
+//        return true;
+//    }
+
+//    @Override
+//    public Boolean resetPassword(ResetPasswordRequest resetPasswordRequest) {
+//        OTP existedOTP = otpRepository.findByUsernameAndOtp(resetPasswordRequest.getUsername(), resetPasswordRequest.getOtp());
+//        if (existedOTP == null) {
+//            throw new BusinessException("Invalid OTP or username");
+//        }
+//        Account existedAccount = accountRepository.findByUsername(resetPasswordRequest.getUsername());
+//        if (existedAccount == null) {
+//            throw new BusinessException("Account not found");
+//        }
+//        existedAccount.setPassword(passwordEncoder.encode(resetPasswordRequest.getNewPassword()));
+//        accountRepository.save(existedAccount);
+//        otpRepository.delete(existedOTP);
+//        return true;
+//    }
+
+    @Transactional
+    public void resetPassword(String token, String newPassword) {
+        PasswordResetToken resetToken = passwordResetTokenRepository.findById(token)
+                .orElseThrow(() -> new RuntimeException("Invalid token"));
+
+        if (resetToken.isUsed()) {
+            throw new RuntimeException("Token already used");
         }
-        Random random = new Random();
-        Integer otp = random.nextInt(1000000);
+        if (resetToken.isExpired()) {
+            throw new RuntimeException("Token expired");
+        }
 
-        OTP newOTP = new OTP();
-        newOTP.setUsername(forgotPasswordRequest.getUsername());
-        newOTP.setOtp(otp.toString());
+        Account account = resetToken.getAccount();
+        account.setPassword(passwordEncoder.encode(newPassword));
+        accountRepository.save(account);
 
-        OTP createdOTP = otpRepository.save(newOTP);
-        log.info("OTP for username {}: {}", forgotPasswordRequest.getUsername(), createdOTP.getOtp());
-        return true;
+        resetToken.setUsedAt(LocalDateTime.now());
+        passwordResetTokenRepository.save(resetToken);
+
     }
 
-    @Override
-    public Boolean resetPassword(ResetPasswordRequest resetPasswordRequest) {
-        OTP existedOTP = otpRepository.findByUsernameAndOtp(resetPasswordRequest.getUsername(), resetPasswordRequest.getOtp());
-        if (existedOTP == null) {
-            throw new BusinessException("Invalid OTP or username");
-        }
-        Account existedAccount = accountRepository.findByUsername(resetPasswordRequest.getUsername());
-        if (existedAccount == null) {
-            throw new BusinessException("Account not found");
-        }
-        existedAccount.setPassword(passwordEncoder.encode(resetPasswordRequest.getNewPassword()));
-        accountRepository.save(existedAccount);
-        otpRepository.delete(existedOTP);
-        return true;
-    }
+
+
+
+
 
     @Override
     public Boolean lockAccount(Integer id, AccountLockRequest lockAccountRequest) {

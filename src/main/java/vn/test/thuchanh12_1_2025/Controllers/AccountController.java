@@ -38,6 +38,16 @@ public class AccountController {
     }
 
 
+    @GetMapping("/{id}")
+    public ResponseEntity<BaseResponse<Account>> getUserDetail(@PathVariable Integer id) {
+        return ResponseEntity.ok(
+                new BaseResponse<>(accountService.getAccountById(id), "Get user detail successfully")
+        );
+    }
+
+
+
+
 
     // update account
     @PutMapping("/{id}")

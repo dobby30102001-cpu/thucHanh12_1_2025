@@ -10,7 +10,9 @@ import java.util.List;
 public interface AccountService {
 
 
-    Page<Account>  getAllAccounts(Pageable pageable);
+   Account getAccountById(Integer id);
+
+    Page<Account> getAllAccounts(Pageable pageable);
 
     Account addAccount(CreateAccountRequest account);
 
@@ -23,7 +25,7 @@ public interface AccountService {
 
     Account addAccountToDepartment(CreateAccountRequest createAccountRequest);
 
-    String forgotPassword( String forgotPasswordRequest);
+    String forgotPassword(String forgotPasswordRequest);
 
     void resetPassword(String token, String newPassword);
 

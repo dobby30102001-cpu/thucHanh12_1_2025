@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-@Table(name="account")
+@Table(name = "account")
 
 public class Account {
     @Id
@@ -17,11 +17,11 @@ public class Account {
 
     private Long id;
 
-    @Column(name="username")
+    @Column(name = "username")
     private String username;
 
-    @Column(name="password")
-    private  String password;
+    @Column(name = "password")
+    private String password;
 
     @Column(name = "first_name")
     private String firstName;

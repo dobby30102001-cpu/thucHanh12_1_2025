@@ -15,16 +15,15 @@ public class CreateAccountRequest {
 
     @NotEmpty(message = "Username cannot be empty")
     private String username;
-    @NotEmpty(message = "Password cannot be empty")
-    private String password;
+
     @NotEmpty(message = "First name cannot be empty")
     private String firstName;
     @NotEmpty(message = "Last name cannot be empty")
     private String lastName;
+
+    private String password;
     @NotEmpty(message = "Role cannot be empty")
     private String role;
-
-
     @NotNull
     private Integer departmentId;
 

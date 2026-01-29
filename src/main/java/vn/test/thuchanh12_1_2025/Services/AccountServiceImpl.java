@@ -256,6 +256,15 @@ public class AccountServiceImpl implements AccountService {
         return true;
     }
 
+
+    @Override
+    public Account getAccountById(Integer id) {
+        Optional<Account> existedAccount = accountRepository.findById(id);
+        if (existedAccount.isEmpty()) {
+            throw new BusinessException("Account not found");
+        }
+        return existedAccount.get();
+    }
 }
 
 

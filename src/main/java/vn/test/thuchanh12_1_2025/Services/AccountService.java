@@ -10,6 +10,8 @@ import java.util.List;
 public interface AccountService {
 
 
+    Page<Account>  getAllAccounts(Pageable pageable);
+
     Account addAccount(CreateAccountRequest account);
 
     Account updateAccount(Integer id, UpdateAccountRequest updateAccountRequest);

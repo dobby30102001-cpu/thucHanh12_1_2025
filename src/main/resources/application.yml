@@ -5,6 +5,3 @@ spring:
     password: root
 
 
-  logging:
-    level:
-      org.springframework.security: DEBUG

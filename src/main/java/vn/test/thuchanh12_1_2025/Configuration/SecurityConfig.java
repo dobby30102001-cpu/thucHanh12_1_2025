@@ -22,23 +22,28 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .cors(Customizer.withDefaults())
-                .authorizeHttpRequests(auth -> auth
-                        // Swagger (springdoc)
-                        .requestMatchers(
-                                "/v3/api-docs/**",
-                                "/swagger-ui/**",
-                                "/swagger-ui.html"
-                        ).permitAll()
-                        // Auth endpoints
 
-                        .requestMatchers(
-                                "/error",
-                                "/api/auth/forgot-password",
-                                "/api/auth/reset-password"
-                        ).permitAll()
-                        // Còn lại phải login
-                        .anyRequest().authenticated()
+                .authorizeHttpRequests(auth -> auth
+                        .anyRequest().permitAll()
                 )
+
+//                .authorizeHttpRequests(auth -> auth
+//                        // Swagger (springdoc)
+//                        .requestMatchers(
+//                                "/v3/api-docs/**",
+//                                "/swagger-ui/**",
+//                                "/swagger-ui.html"
+//                        ).permitAll()
+//                        // Auth endpoints
+//
+//                        .requestMatchers(
+//                                "/error",
+//                                "/api/auth/forgot-password",
+//                                "/api/auth/reset-password"
+//                        ).permitAll()
+//                        // Còn lại phải login
+//                        .anyRequest().authenticated()
+//                )
                 .httpBasic(Customizer.withDefaults());
         return http.build();
     }

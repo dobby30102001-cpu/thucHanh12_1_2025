@@ -42,8 +42,10 @@ public class AccountServiceImpl implements AccountService {
     private final PasswordEncoder passwordEncoder;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
 
-
-
+    @Override
+    public Page<Account> getAllAccounts(Pageable pageable) {
+        return accountRepository.findAll(pageable);
+    }
 
     @Override
     public Account addAccount(CreateAccountRequest createAccountRequest) {

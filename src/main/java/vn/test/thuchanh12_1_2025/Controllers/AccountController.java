@@ -17,13 +17,17 @@ import vn.test.thuchanh12_1_2025.Services.AccountService;
 
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class AccountController {
     private final AccountService accountService;
 
+    @GetMapping
+    public ResponseEntity<BaseResponse<Page<Account>>> getAccounts(Pageable pageable) {
+        return ResponseEntity.ok(new BaseResponse<>(accountService.getAllAccounts(pageable), "Get all accounts successfully"));
+    }
 
-    @PostMapping("/api/users")
+    @PostMapping
 //  or  @PreAuthorize("hasRole('ADMIN')")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
 //    @PreAuthorize("hasAuthority('ROLE_USER')")
@@ -36,13 +40,13 @@ public class AccountController {
 
 
     // update account
-    @PutMapping("/api/users/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<BaseResponse<Account>> updateAccount(@PathVariable Integer id, @RequestBody @Valid UpdateAccountRequest userUpdate) {
         return ResponseEntity.ok(new BaseResponse<>(accountService.updateAccount(id, userUpdate), "Update user successfully"));
     }
 
     // delete multiple accounts by ids
-    @DeleteMapping("/api/users")
+    @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<BaseResponse<Void>> deleteMultipleAccounts(@RequestBody DeleteRequest request) {
         accountService.deleteMultipleAccounts(request.getIds());
@@ -67,20 +71,20 @@ public class AccountController {
     }
 
 
-    // Quên mật khẩu
-    // 1. request: username  -> response TRUE/FALSE
-    @PostMapping("/forgot-password")
-    public ResponseEntity<BaseResponse<String>> forGotPassWord(@RequestBody ForgotPasswordRequest forgotPasswordRequest) {
-        String token = accountService.forgotPassword(forgotPasswordRequest.getEmail());
-        return ResponseEntity.ok(new BaseResponse<>(token, "Reset token created"));
-    }
-
-    // 2. verify token và đặt lại mật khẩu mới
-    @PostMapping("/reset-password")
-    public ResponseEntity<BaseResponse<Void>> resetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest) {
-         accountService.resetPassword(resetPasswordRequest.getToken(),resetPasswordRequest.getNewPassword());
-        return ResponseEntity.ok(new BaseResponse<>( null,"Password reset success"));
-    }
+//    // Quên mật khẩu
+//    // 1. request: username  -> response TRUE/FALSE
+//    @PostMapping("/forgot-password")
+//    public ResponseEntity<BaseResponse<String>> forGotPassWord(@RequestBody ForgotPasswordRequest forgotPasswordRequest) {
+//        String token = accountService.forgotPassword(forgotPasswordRequest.getEmail());
+//        return ResponseEntity.ok(new BaseResponse<>(token, "Reset token created"));
+//    }
+//
+//    // 2. verify token và đặt lại mật khẩu mới
+//    @PostMapping("/reset-password")
+//    public ResponseEntity<BaseResponse<Void>> resetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest) {
+//         accountService.resetPassword(resetPasswordRequest.getToken(),resetPasswordRequest.getNewPassword());
+//        return ResponseEntity.ok(new BaseResponse<>( null,"Password reset success"));
+//    }
 
 
     // lock& unlock account

@@ -23,9 +23,12 @@ public class CustomUserDetailsService implements UserDetailsService {
             throw new ApplicationContextException("User not found with username: " + username);
 
         }
-        return User.withUsername(username)
-                .password(account.getPassword())
-                .roles(account.getRole())
+        //  tránh null role
+        String role = account.getRole() == null ? "USER" : account.getRole();
+
+        return  User.withUsername(account.getUsername())   //  dùng username từ DB cho an toàn
+                .password(account.getPassword())          // BCrypt hash
+                .roles(role)                              // "ADMIN" -> ROLE_ADMIN
                 .build();
     }
 

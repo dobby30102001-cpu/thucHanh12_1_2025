@@ -27,9 +27,15 @@ import java.util.Optional;
 
 import vn.test.thuchanh12_1_2025.Models.PasswordResetToken;
 import vn.test.thuchanh12_1_2025.Repositories.PasswordResetTokenRepository;
-
-
 import java.util.UUID;
+
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import vn.test.thuchanh12_1_2025.Configuration.CustomUserDetailsService;
+import vn.test.thuchanh12_1_2025.Configuration.JwtService;
+
 
 
 @Slf4j
@@ -41,6 +47,35 @@ public class AccountServiceImpl implements AccountService {
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
+
+    private final AuthenticationManager authenticationManager;
+    private final CustomUserDetailsService customUserDetailsService;
+    private final JwtService jwtService;
+
+
+
+    @Override
+    public String login(String username, String password) {
+
+        Account existedAccount = accountRepository.findByUsername(username);
+        if (existedAccount == null) {
+            throw new BusinessException("Account not found");
+        }
+
+        //  Nếu account bị LOCK
+        if (existedAccount.getStatus() == AccountStatus.LOCKED) {
+            throw new BusinessException("Account is LOCKED");
+        }
+
+        //Authenticate (sai mật khẩu thi Spring tự throw)
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(username, password)
+        );
+
+        // Generate JWT
+        UserDetails user = customUserDetailsService.loadUserByUsername(username);
+        return jwtService.generateToken(user);
+    }
 
     @Override
     public Page<Account> getAllAccounts(Pageable pageable) {

@@ -9,8 +9,11 @@ import java.util.List;
 
 public interface AccountService {
 
+    String login(String username, String password);
 
-   Account getAccountById(Integer id);
+
+
+    Account getAccountById(Integer id);
 
     Page<Account> getAllAccounts(Pageable pageable);
 

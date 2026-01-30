@@ -29,7 +29,8 @@ public class AccountController {
 
     @PostMapping
 //  or  @PreAuthorize("hasRole('ADMIN')")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+//    @PreAuthorize("hasAuthority('ADMIN')")
+
 //    @PreAuthorize("hasAuthority('ROLE_USER')")
     public ResponseEntity<BaseResponse<Account>> createAccount(@RequestBody @Valid CreateAccountRequest user) {
         return ResponseEntity.status(HttpStatus.CREATED)

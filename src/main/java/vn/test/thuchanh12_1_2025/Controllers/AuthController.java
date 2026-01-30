@@ -24,7 +24,6 @@ public class AuthController {
     //  login for JWT
     @PostMapping("/login")
     public ResponseEntity<BaseResponse<AuthResponse>> login(@Valid @RequestBody LoginRequest req) {
-        // accountService sẽ authenticate và generate JWT
         String token = accountService.login(req.getUsername(), req.getPassword());
         return ResponseEntity.ok(new BaseResponse<>(new AuthResponse(token), "Login success"));
     }

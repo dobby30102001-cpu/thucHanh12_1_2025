@@ -24,11 +24,18 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         }
         //  tránh null role
-        String role = account.getRole() == null ? "USER" : account.getRole();
+        String role = account.getRole();
+        if (role == null || role.isBlank()) role = "USER";
 
-        return  User.withUsername(account.getUsername())   //  dùng username từ DB cho an toàn
-                .password(account.getPassword())          // BCrypt hash
-                .roles(role)                              // "ADMIN" -> ROLE_ADMIN
+// Nếu DB lỡ lưu "ROLE_ADMIN" thì bỏ prefix để dùng .roles()
+        if (role.startsWith("ROLE_")) role = role.substring(5);
+
+// Chuẩn hoá để khớp @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+        role = role.trim().toUpperCase();
+
+        return User.withUsername(account.getUsername())
+                .password(account.getPassword())
+                .roles(role)   // "ADMIN" -> ROLE_ADMIN
                 .build();
     }
 

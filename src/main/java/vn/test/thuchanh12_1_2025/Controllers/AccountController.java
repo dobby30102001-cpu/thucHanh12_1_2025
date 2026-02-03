@@ -28,10 +28,7 @@ public class AccountController {
     }
 
     @PostMapping
-//  or  @PreAuthorize("hasRole('ADMIN')")
-//    @PreAuthorize("hasAuthority('ADMIN')")
 
-//    @PreAuthorize("hasAuthority('ROLE_USER')")
     public ResponseEntity<BaseResponse<Account>> createAccount(@RequestBody @Valid CreateAccountRequest user) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new BaseResponse<>(accountService.addAccount(user),
@@ -57,13 +54,21 @@ public class AccountController {
     }
 
     // delete multiple accounts by ids
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<BaseResponse<Void>> deleteMultipleAccounts(@RequestBody DeleteRequest request) {
-        accountService.deleteMultipleAccounts(request.getIds());
-        return ResponseEntity.ok(new BaseResponse<>(null, "Delete accounts successfully"));
+//    @DeleteMapping("/{id}")
+////    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+//    public ResponseEntity<BaseResponse<Void>> deleteMultipleAccounts(@RequestBody DeleteRequest request) {
+//        accountService.deleteMultipleAccounts(request.getIds());
+//        return ResponseEntity.ok(new BaseResponse<>(null, "Delete accounts successfully"));
+//
+//    }
 
+
+    @DeleteMapping("/delete-account/{id}")
+    public ResponseEntity<BaseResponse<Void>> deleteAccount(@PathVariable Integer id) {
+        accountService.deleteAccounts(id);
+        return ResponseEntity.ok(new BaseResponse<>(null, "Delete account successfully"));
     }
+
 
     //    // api lấy danh sách account có phân trang(nhiều điệu kiên searching sư dụng Specification)
     @GetMapping("/search")

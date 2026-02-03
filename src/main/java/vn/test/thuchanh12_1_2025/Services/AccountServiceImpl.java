@@ -96,7 +96,9 @@ public class AccountServiceImpl implements AccountService {
             }
         }
         Account account = modelMapper.map(createAccountRequest, Account.class);
+        account.setEmail(createAccountRequest.getUsername());
         account.setPassword(passwordEncoder.encode(createAccountRequest.getPassword()));
+        account.setStatus(AccountStatus.ACTIVE);
         account.setId(null);
         return accountRepository.save(account);
 
@@ -116,14 +118,23 @@ public class AccountServiceImpl implements AccountService {
 
     }
 
-    @Override
-    public void deleteMultipleAccounts(List<Integer> ids) {
-        List<Account> existedAccount = accountRepository.findAllById(ids);
-        if (existedAccount.isEmpty()) {
-            throw new BusinessException("Account not found");
-        }
+//    @Override
+//    public void deleteMultipleAccounts(List<Integer> ids) {
+//        List<Account> existedAccount = accountRepository.findAllById(ids);
+//        if (existedAccount.isEmpty()) {
+//            throw new BusinessException("Account not found");
+//        }
+//
+//        accountRepository.deleteAllById(ids);
+//    }
 
-        accountRepository.deleteAllById(ids);
+
+    @Override
+    public void deleteAccounts(Integer id) {
+        Account existedAccount = accountRepository.findById(id)
+                .orElseThrow(() -> new BusinessException("Account not found"));
+        accountRepository.deleteById(id);
+
     }
 
     @Override

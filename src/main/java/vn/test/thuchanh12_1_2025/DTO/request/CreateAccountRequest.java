@@ -20,8 +20,11 @@ public class CreateAccountRequest {
     private String firstName;
     @NotEmpty(message = "Last name cannot be empty")
     private String lastName;
+    @NotEmpty(message = "Address cannot be empty")
+    private String address;
 
-    private String password;
+
+         private String password;
     @NotEmpty(message = "Role cannot be empty")
     private String role;
     @NotNull

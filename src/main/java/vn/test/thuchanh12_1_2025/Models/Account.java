@@ -37,9 +37,6 @@ public class Account {
     @Column(nullable = false, unique = true)
     private String email;
 
-
-
-
     // lock account
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

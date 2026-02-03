@@ -21,10 +21,9 @@ public interface AccountService {
 
     Account updateAccount(Integer id, UpdateAccountRequest updateAccountRequest);
 
-    void deleteMultipleAccounts(List<Integer> ids);
+    void deleteAccounts(Integer id);
 
     Page<Account> getAccountByFilter(GetAccountRequest request, Pageable pageable);
-
 
     Account addAccountToDepartment(CreateAccountRequest createAccountRequest);
 
